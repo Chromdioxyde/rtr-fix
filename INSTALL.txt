@@ -1,0 +1,131 @@
+rtr-mousefix - mouse and field-of-view fixes for Rogue Trooper Redux (Steam)
+===========================================================================
+
+WHAT IT DOES
+  1. MOUSE LOOK (confirmed in game): in the stock game a fast mouse flick turns the camera LESS than
+     a slow sweep over the same distance (the mouse is run through a gamepad-stick curve with a hard
+     cap). This fix makes mouse look linear and lets you set the speed in a small text file.
+  2. MENU POINTER (confirmed in game): the game moves the menu pointer much faster sideways than up/down
+     on wide screens. This makes it equally fast on both axes.
+  3. FIELD OF VIEW (new; confirmed in normal gameplay, cutscenes not yet checked): the game's text
+     tables contain no FOV setting. You can set the horizontal FOV in degrees; it works on every
+     aspect ratio.
+
+YOU DO NOT NEED TO COMPILE ANYTHING.
+  Installing means copying one file (dinput8.dll) into the game folder.
+  The game's own files are never modified, so removing it is just deleting that file.
+
+IMPORTANT - PLEASE READ
+  * Unofficial, not affiliated with Rebellion. Provided "as is", WITHOUT WARRANTY of any kind (see
+    LICENSE.txt). Use at your own risk. Only used in single player; do not use it online.
+  * ANTIVIRUS: dinput8.dll is a proxy DLL that patches the game in memory. Antivirus programs often flag
+    such files as suspicious (false positive), especially on Windows. The source code is public and the
+    DLL can be built from it. If you do not trust the binary, build it yourself (see README.md).
+  * WINDOWS IS UNTESTED. It was only tested on Linux with Proton. It should work on Windows, but nobody
+    has tried it.
+  * Only the Steam build with the checksum given in README.md is supported. On any other build the
+    DLL patches nothing (see dinput8-proxy.log).
+
+
+INSTALL
+-------
+1. Open the game folder.
+   Steam: Library -> right-click "Rogue Trooper Redux" -> Manage -> Browse local files.
+   Then open the folder "bin", then "x64". It contains RTR_x64.exe. This is the right folder.
+
+2. Copy these files from this zip into that folder:
+     dinput8.dll              (required)
+     dinput8-proxy.ini        (optional; it is created automatically if you leave it out)
+
+3. Depending on your system:
+
+   WINDOWS
+     Nothing else to do. Start the game from Steam.
+
+   LINUX / STEAM DECK (Proton)
+     Steam -> right-click the game -> Properties -> General -> Launch Options, and enter:
+
+       WINEDLLOVERRIDES="dinput8=n,b" %command%
+
+     If you already use launch options, add the part in front of what is there. Example with MangoHud:
+
+       WINEDLLOVERRIDES="dinput8=n,b" mangohud %command%
+
+     Start the game.
+
+4. Check that it works.
+   After the first start the folder (bin/x64) contains a file "dinput8-proxy.log". Open it. The line
+
+       look patch active
+
+   means the fix is on. Then flick the mouse in the game: the camera should now turn in proportion
+   to how far you move the mouse, no matter how fast, instead of hitting a speed limit.
+
+
+SETTINGS
+--------
+Open "dinput8-proxy.ini" (same folder) in any text editor:
+
+    gain_x=0.5          mouse look, horizontal
+    gain_y=0.5          mouse look, vertical
+    menu_equalize=1     menu pointer: equal speed on both axes (0 = the game's own behaviour)
+    menu_gain_x=1.0     menu pointer speed, horizontal
+    menu_gain_y=1.0     menu pointer speed, vertical
+    fov_horizontal=0    horizontal field of view in degrees, 0 = leave the game alone
+
+Save the file: the new values are used while the game is running, within about a second. No restart
+needed, and that includes the field of view. A decimal point or a comma both work. A wrong value is ignored
+and the old one stays.
+
+  gain_x / gain_y     Mouse look speed. Higher = faster, lower = slower (0.05 to 20).
+                      Start with 0.5 and adjust to your mouse DPI and taste (the author ended up at 0.3).
+                      The game's own sensitivity options, if you use them, multiply with this value.
+
+  menu_equalize       1 (default) = the menu pointer moves equally fast, in pixels, on both axes. The game
+                      itself moves it about 2.4 times faster sideways than up/down on a 21:9 screen
+                      (1.8 times on 16:9). Sideways speed stays as it is, vertical speed is raised.
+                      0 = the game's own behaviour.
+
+  menu_gain_x / _y    Extra speed factor per axis for the menu pointer (0.05 to 20, 1.0 = unchanged).
+
+  fov_horizontal      The horizontal FOV you want, in degrees (30 to 150; 0 = off). Try 90 to 110.
+                      The game picks its own value from the aspect ratio: about 62 at 4:3, 75 at 16:9,
+                      84 at 21:9 and 101 at 32:9. With fov_horizontal=100 the normal camera gets exactly
+                      100 degrees on your screen, whatever its aspect ratio. Narrower stock camera modes,
+                      such as aiming, stay proportionally narrower. Cutscenes are affected too.
+
+
+UNINSTALL
+---------
+Delete dinput8.dll, dinput8-proxy.ini and dinput8-proxy.log from bin/x64.
+On Linux also remove the launch option. Nothing else was changed.
+
+
+TROUBLESHOOTING
+---------------
+* No dinput8-proxy.log appears:
+    The DLL is not being loaded.
+    - Make sure dinput8.dll is in the folder next to RTR_x64.exe (bin/x64), not in another folder.
+    - Linux: check the launch option exactly as written above (quotes included).
+    - If another mod already uses a dinput8.dll in that folder, the two conflict. Only one can be used.
+* The log says "call site does not match":
+    Your game version is different from the one this fix was made for, so it deliberately does
+    nothing and the game behaves like stock. Supported: the Steam version with RTR_x64.exe of
+    4 617 936 bytes (Steam build 2255271). Please report your file size and Steam build.
+* The mouse is too fast or too slow: change gain_x / gain_y (see above).
+* The picture looks odd with a wide FOV: lower fov_horizontal, or set it to 0 to compare with the stock view.
+* Windows antivirus warns about dinput8.dll: the DLL is not code-signed, which some tools dislike.
+  The full source is in the "-source" zip (README.md explains how to build and verify it yourself).
+* The menu pointer feels too fast or slow: use menu_gain_x / menu_gain_y. Set menu_equalize=0 to get the
+  game's own behaviour back.
+
+Optional switches (Linux launch options, put them before %command%):
+  RTR_MOUSE_LINEAR=0     turn ALL fixes off (stock behaviour), handy to compare
+See README.md in the source zip for all options.
+
+
+NOTES
+-----
+Unofficial. Not affiliated with Rebellion or Steam. Use at your own risk. Only used in single
+player; do not use it in online/multiplayer. Tested on Linux with Proton Experimental; the same
+DLL should work on Windows but that has not been tested. License: MIT (see LICENSE).

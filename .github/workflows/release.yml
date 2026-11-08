@@ -1,0 +1,73 @@
+name: release
+
+# Builds the DLL from source and publishes it as a GitHub Release when a version tag is pushed
+# (e.g. `git tag v0.2.0 && git push origin v0.2.0`). Pushes and pull requests only build and test.
+on:
+  push:
+    tags: ["v*"]
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang lld mingw-w64
+
+      - name: Check that the tag matches VERSION
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          test "${GITHUB_REF_NAME#v}" = "$(cat VERSION)" || {
+            echo "tag $GITHUB_REF_NAME does not match VERSION $(cat VERSION)"; exit 1; }
+
+      # Builds the DLL, runs the host unit tests, creates dist/*.zip. The Wine test is skipped (no Proton here).
+      - name: Build, test, package
+        run: ./release.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rtr-mousefix
+          path: dist/*.zip
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: rtr-mousefix
+          path: dist
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          # Release notes: the matching section of CHANGELOG.md, plus checksums and the standing warnings.
+          {
+            awk -v v="$version" '$0 == "## " v {on=1; next} /^## /{on=0} on' CHANGELOG.md
+            echo
+            echo "Use **rtr-mousefix-$version.zip** (nothing to compile). The \`-source.zip\` is for developers."
+            echo
+            echo "> Provided as is, without warranty. Windows is untested. Antivirus programs may flag the DLL"
+            echo "> (false positive); the source is in this repository and the DLL can be built from it."
+            echo
+            echo "SHA-256:"
+            echo '```'
+            (cd dist && sha256sum *.zip)
+            echo '```'
+          } > notes.md
+          gh release create "$GITHUB_REF_NAME" dist/*.zip --title "rtr-mousefix $version" --notes-file notes.md
