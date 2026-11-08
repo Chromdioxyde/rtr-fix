@@ -62,6 +62,7 @@ jobs:
             echo
             echo "Use **rtr-mousefix-$version.zip** (nothing to compile). The \`-source.zip\` is for developers."
             echo
+            echo "> Unofficial fan project, not affiliated with or endorsed by the game's developers or publisher (Rebellion)."
             echo "> Provided as is, without warranty. Windows is untested. Antivirus programs may flag the DLL"
             echo "> (false positive); the source is in this repository and the DLL can be built from it."
             echo
@@ -70,4 +71,10 @@ jobs:
             (cd dist && sha256sum *.zip)
             echo '```'
           } > notes.md
-          gh release create "$GITHUB_REF_NAME" dist/*.zip --title "rtr-mousefix $version" --notes-file notes.md
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            # Re-run for an existing release (tag was moved): replace assets and notes.
+            gh release upload "$GITHUB_REF_NAME" dist/*.zip --clobber
+            gh release edit "$GITHUB_REF_NAME" --title "rtr-mousefix $version" --notes-file notes.md
+          else
+            gh release create "$GITHUB_REF_NAME" dist/*.zip --title "rtr-mousefix $version" --notes-file notes.md
+          fi

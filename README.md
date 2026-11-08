@@ -18,7 +18,9 @@ game makes the vertical FOV *smaller*.
 `rtr-mousefix` is a small `dinput8.dll` proxy with a live-reloaded config file. It does not modify
 `RTR_x64.exe` on disk.
 
-> **Disclaimer.** Unofficial, not affiliated with or endorsed by Rebellion. This software is provided
+> **Disclaimer.** This is an unofficial, independent fan project. It is **not affiliated with, authorized,
+> sponsored or endorsed by the developers or publisher of Rogue Trooper Redux (Rebellion)**, or by Valve/Steam.
+> "Rogue Trooper" and "Rogue Trooper Redux" belong to their respective owners. This software is provided
 > **"as is", without warranty of any kind** (see [LICENSE](LICENSE)); use it at your own risk. It was only
 > used in single player. I have not checked how it interacts with the multiplayer/online features, so
 > don't use it there.

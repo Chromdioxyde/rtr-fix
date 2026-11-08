@@ -16,8 +16,10 @@ YOU DO NOT NEED TO COMPILE ANYTHING.
   The game's own files are never modified, so removing it is just deleting that file.
 
 IMPORTANT - PLEASE READ
-  * Unofficial, not affiliated with Rebellion. Provided "as is", WITHOUT WARRANTY of any kind (see
-    LICENSE.txt). Use at your own risk. Only used in single player; do not use it online.
+  * Unofficial, independent fan project. NOT affiliated with, authorized or endorsed by the developers or
+    publisher of Rogue Trooper Redux (Rebellion) or by Valve/Steam. Provided "as is", WITHOUT WARRANTY
+    of any kind (see LICENSE.txt). Use at your own risk. Only used in single player; do not use it
+    online.
   * ANTIVIRUS: dinput8.dll is a proxy DLL that patches the game in memory. Antivirus programs often flag
     such files as suspicious (false positive), especially on Windows. The source code is public and the
     DLL can be built from it. If you do not trust the binary, build it yourself (see README.md).
@@ -126,6 +128,7 @@ See README.md in the source zip for all options.
 
 NOTES
 -----
-Unofficial. Not affiliated with Rebellion or Steam. Use at your own risk. Only used in single
+Unofficial. Not affiliated with, authorized or endorsed by the developers or publisher of the game
+(Rebellion) or by Steam. Use at your own risk. Only used in single
 player; do not use it in online/multiplayer. Tested on Linux with Proton Experimental; the same
 DLL should work on Windows but that has not been tested. License: MIT (see LICENSE).
